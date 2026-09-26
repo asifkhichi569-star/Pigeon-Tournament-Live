@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیجن ٹورنامنٹ چیمپئن شپ - Offline</title>
+
+    <style>
+        :root {
+            --primary-color: #047857;
+            --primary-dark: #065f46;
+            --accent-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --table-header-bg: #f1f5f9;
+            --table-hover: #f8fafc;
+            --row-pos1: #fef9c3;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #059669;
+            --primary-dark: #047857;
+            --accent-color: #fbbf24;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --table-header-bg: #1e293b;
+            --table-hover: #273548;
+            --row-pos1: #362f1a;
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Arial, sans-serif; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+        body { background-color: var(--bg-color); margin: 0; padding: 12px; direction: ltr; text-align: left; color: var(--text-main); }
+        .container { max-width: 1350px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        
+        .header-banner { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.1); }
+        .header-text h1 { margin: 0 0 4px 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .header-text p { margin: 0; font-size: 13px; opacity: 0.9; font-weight: 400; }
+        
+        .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        
+        button { padding: 8px 14px; border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        button:hover { transform: translateY(-1px); opacity: 0.95; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        button:active { transform: translateY(0); }
+
+        .admin-login-btn { background: #f59e0b; color: white; }
+        .master-login-btn { background: #7c3aed; }
+        .monitor-login-btn { background: #0d9488; }
+        .theme-toggle-btn { background: #334155; color: #fff; }
+        .btn-green { background-color: var(--primary-color); }
+        .btn-blue { background-color: #2563eb; }
+        .btn-purple { background-color: #7c3aed; }
+        .btn-danger { background-color: #dc2626; }
+        .btn-teal { background-color: #0d9488; }
+        .btn-orange { background-color: #ea580c; }
+
+        .control-panel { background: var(--bg-color); padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: none; }
+        .control-panel.active-admin { display: block; animation: fadeIn 0.3s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: flex-end; }
+        .col { flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 4px; }
+        label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        input, select, textarea { padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; outline: none; background: var(--card-bg); text-align: left; color: var(--text-main); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1); }
+
+        .cups-bar { display: flex; gap: 8px; overflow-x: auto; background: #0f172a; padding: 10px 15px; align-items: center; scrollbar-width: thin; }
+        .cup-tab { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 7px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; white-space: nowrap; font-weight: 500; }
+        .cup-tab:hover { background: #334155; color: #fff; }
+        .cup-tab.active { background: var(--accent-color); color: #0f172a; font-weight: 700; border-color: #d97706; }
+        .cup-tab.all-cups-tab { background: #7c3aed; border-color: #6d28d9; color: #fff; }
+        .cup-tab.all-cups-tab.active { background: #6d28d9; color: #fff; font-weight: 700; }
+
+        .news-ticker-bar { background: #1e293b; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 8px 15px; font-size: 13px; font-weight: 600; color: #f8fafc; direction: rtl; }
+        .ticker-label { background: #dc2626; color: white; padding: 3px 10px; border-radius: 4px; font-size: 11px; margin-left: 12px; white-space: nowrap; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .ticker-content-wrap { overflow: hidden; width: 100%; }
+
+        .dates-bar { display: flex; gap: 6px; overflow-x: auto; background: var(--card-bg); padding: 12px 15px; border-bottom: 1px solid var(--border-color); justify-content: flex-start; scrollbar-width: thin; }
+        .date-tab { background: var(--card-bg); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; white-space: nowrap; font-weight: 600; }
+        .date-tab:hover { opacity: 0.8; }
+        .date-tab.active { background: var(--primary-color); color: #fff; font-weight: 700; box-shadow: 0 2px 4px rgba(4, 120, 87, 0.2); }
+        .date-tab.total-tab { background: var(--card-bg); color: #d97706; border-color: #f59e0b; }
+        .date-tab.total-tab.active { background: #f59e0b; color: #fff; }
+
+        .stats-container { display: flex; justify-content: flex-start; gap: 12px; flex-wrap: wrap; padding: 14px 15px; background: var(--bg-color); border-bottom: 1px solid var(--border-color); }
+        .stat-badge { display: flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 30px; color: white; font-size: 12px; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.05); letter-spacing: 0.3px; }
+        .badge-lofts { background-color: #1d4ed8; }
+        .badge-total { background-color: #d97706; }
+        .badge-landed { background-color: #dc2626; }
+        .badge-remaining { background-color: var(--primary-color); }
+        .badge-viewers { background-color: #4f46e5; }
+
+        .winners-container { display: flex; justify-content: space-between; gap: 15px; padding: 14px 15px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+        .winner-card { flex: 1; min-width: 280px; max-width: 450px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .winner-info { display: flex; align-items: center; gap: 12px; }
+        .winner-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); background: var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .winner-title { font-size: 11px; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px; }
+        .winner-name { font-size: 15px; font-weight: 700; color: var(--text-main); margin-top: 2px; }
+        .winner-time { font-size: 13px; font-weight: 700; color: #dc2626; background: rgba(220, 38, 38, 0.1); padding: 6px 12px; border-radius: 6px; letter-spacing: 0.3px; }
+
+        .search-box { padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); }
+        .search-box input { width: 260px; padding: 7px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; text-align: left; background: var(--card-bg); color: var(--text-main); }
+        .action-buttons { display: flex; gap: 8px; }
+
+        .table-responsive { overflow-x: auto; padding: 10px; min-height: 250px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; text-align: center; }
+        th { background: var(--table-header-bg); color: var(--text-main); padding: 10px 6px; border-bottom: 2px solid var(--border-color); border-right: 1px solid var(--border-color); white-space: nowrap; font-weight: 700; }
+        th:first-child { border-top-left-radius: 6px; }
+        th:last-child { border-top-right-radius: 6px; border-right: none; }
+        td { padding: 8px 6px; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); white-space: nowrap; vertical-align: middle; color: var(--text-main); }
+        td:last-child { border-right: none; }
+        tr:hover { background-color: var(--table-hover) !important; }
+        tr.pos-1 { background-color: var(--row-pos1) !important; font-weight: bold; }
+        tr.monitored-row { background-color: rgba(13, 148, 136, 0.15) !important; border: 2px dashed #0d9488; }
+
+        .player-cell { display: flex; align-items: center; gap: 10px; justify-content: flex-start; padding: 0 5px; }
+        .player-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color); background: var(--border-color); cursor: pointer; transition: transform 0.2s; }
+        .player-img:hover { transform: scale(1.1); }
+        
+        .time-input { width: 90px; text-align: center; padding: 5px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: 600; background: var(--card-bg); color: var(--text-main); }
+        .time-input.nil-flight { background-color: rgba(59, 130, 246, 0.15) !important; border-color: #3b82f6 !important; color: #60a5fa; }
+        
+        .time-display { font-weight: 700; color: var(--text-main); padding: 4px 8px; background: var(--table-header-bg); border-radius: 6px; display: inline-block; font-size: 11px; }
+        .time-display.nil-flight { background-color: rgba(59, 130, 246, 0.15) !important; color: #60a5fa !important; border: 1px solid #3b82f6; }
+
+        .total-badge { background-color: rgba(3, 105, 161, 0.15); color: #38bdf8; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-block; font-size: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+
+        @keyframes blinkEffect {
+            0% { background-color: #ef4444; color: white; }
+            50% { background-color: #fee2e2; color: #b91c1c; }
+            100% { background-color: #ef4444; color: white; }
+        }
+        .blinking-cell { animation: blinkEffect 1s infinite; border-radius: 4px; }
+
+        .footer-credit { text-align: center; padding: 14px; background: var(--bg-color); border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast-msg { background: #059669; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; display: flex; align-items: center; gap: 8px; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; animation: fadeInModal 0.2s ease-out; }
+        
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-box { background: var(--card-bg); padding: 24px; border-radius: 12px; max-width: 380px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); text-align: center; border: 1px solid var(--border-color); }
+        .modal-box h3 { margin: 0 0 8px 0; font-size: 18px; color: var(--text-main); font-weight: 700; }
+        .modal-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
+        .modal-box input, .modal-box select { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 13px; background: var(--card-bg); color: var(--text-main); }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 5px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div id="toastContainer"></div>
+
+<div class="container" id="pdfContent">
+    <div class="header-banner">
+        <div class="header-text">
+            <h1 id="bannerTitle">پیجن ٹورنامنٹ چیمپئن شپ</h1>
+            <p id="dispTimes">Start time: 05:00 | End time: 18:00</p>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn">☀️ Light Mode</button>
+            <button class="btn-blue" onclick="shareResults()">🔗 Share</button>
+            <button class="btn-orange" onclick="downloadPDF()">📄 PDF</button>
+            <button class="monitor-login-btn" onclick="openMonitorLoginModal()">🛡️ منصف لاگ ان</button>
+            <button class="master-login-btn" onclick="openMasterLoginModal()">👑 Master Admin</button>
+            <button class="admin-login-btn" onclick="openCupLoginModal()">🔒 Cup Admin Login</button>
+        </div>
+    </div>
+
+    <!-- کپوں کی بار -->
+    <div class="cups-bar" id="cupsContainer"></div>
+
+    <!-- لائیو نیوز پٹی -->
+    <div class="news-ticker-bar" id="newsTickerContainer">
+        <div class="ticker-label">🔴 لائیو نیوز:</div>
+        <div class="ticker-content-wrap">
+            <marquee behavior="scroll" direction="right" scrollamount="4" id="liveNewsMarquee">خشی پیجن کلب ٹورنامنٹ میں خوش آمدید! تمام لائیو اپڈیٹس یہاں جاری ہیں۔</marquee>
+        </div>
+    </div>
+
+    <div class="control-panel" id="controlPanel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+            <span style="font-weight:700; color:var(--primary-color); font-size:13px;" id="panelTitle">⚙️ Control Panel</span>
+            <button class="btn-danger" style="padding:4px 10px; font-size:11px;" onclick="adminLogout()">Logout</button>
+        </div>
+
+        <div class="row" style="background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+            <div class="col" style="flex:2;">
+                <label style="color:#f59e0b;">📢 لائیو نیوز پٹی اپڈیٹ کریں (Live News):</label>
+                <input type="text" id="cupLiveNewsInput" placeholder="اس کپ کے لیے لائیو خبریں یہاں درج کریں...">
+            </div>
+            <div class="col">
+                <button class="btn-orange" style="margin-top:21px;" onclick="updateCupLiveNews()">Update News</button>
+            </div>
+        </div>
+
+        <div id="masterOnlySection" style="display:none;">
+            <div class="row" style="background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <div class="col" style="flex:2;">
+                    Local Backup & Restore:
+                    <div style="display:flex; gap:6px; margin-top:4px;">
+                        <button class="btn-teal" onclick="exportDataJSON()">📥 Download File</button>
+                        <button class="btn-purple" onclick="document.getElementById('importFile').click()">📤 Upload File</button>
+                        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importDataJSON(event)">
+                    </div>
+                </div>
+                <div class="col" style="flex:2;">
+                    Change Master Password:
+                    <input type="password" id="oldMasterPassVerify" placeholder="Old Grand Master Pass..." style="margin-bottom:4px;">
+                    <input type="password" id="newMasterPassInput" placeholder="New master password...">
+                </div>
+                <div class="col">
+                    <button class="btn-purple" style="margin-top:21px;" onclick="updateMasterPassword()">Update Master</button>
+                </div>
+            </div>
+
+            <div class="row" style="background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <div class="col" style="flex:2;">
+                    Change Grand Master Password:
+                    <input type="password" id="oldGrandMasterPass" placeholder="Old Grand Master Password..." style="margin-bottom:4px;">
+                    <input type="password" id="newGrandMasterPass" placeholder="New Grand Master Password...">
+                </div>
+                <div class="col">
+                    <button class="btn-orange" style="margin-top:21px;" onclick="updateGrandMasterPassword()">Update Grand Master</button>
+                </div>
+            </div>
+
+            <div class="row" style="background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <div class="col">
+                    New Cup Name:
+                    <input type="text" id="newCupNameInput" placeholder="Cup name...">
+                </div>
+                <div class="col">
+                    Cup Password:
+                    <input type="text" id="newCupPassInput" placeholder="Cup password...">
+                </div>
+                <div class="col">
+                    <button class="btn-purple" style="margin-top:21px;" onclick="addNewCup()">+ Add New Cup</button>
+                </div>
+                <div class="col">
+                    <button class="btn-danger" style="margin-top:21px;" onclick="confirmDeleteCurrentCup()">Delete Cup</button>
+                </div>
+            </div>
+
+            <div class="row" style="background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                <div class="col">
+                    Change Current Cup Password:
+                    <input type="text" id="changeCupPassInput" placeholder="New password for this cup...">
+                </div>
+                <div class="col">
+                    <button class="btn-teal" style="margin-top:21px;" onclick="updateCurrentCupPassword()">Update Cup Pass</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" style="flex:2;">
+                <label>Change Cup Name:</label>
+                <input type="text" id="clubName" placeholder="Cup name...">
+            </div>
+            <div class="col">
+                <label>Pigeon Count:</label>
+                <input type="number" id="pigeonCount" value="7" min="1" max="15">
+            </div>
+            <div class="col">
+                <label>Start Time:</label>
+                <input type="time" id="startTimeInput" value="05:00">
+            </div>
+            <div class="col">
+                <label>End Time:</label>
+                <input type="time" id="endTimeInput" value="18:00">
+            </div>
+        </div>
+
+        <div class="row" style="background: var(--card-bg); padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border-color);">
+            <div class="col">
+                <label>کم از کم اڑان کا وقت (منٹس):</label>
+                <input type="number" id="minFlightMinutesInput" value="120" min="0" max="1440" placeholder="Min mins e.g. 120">
+            </div>
+            <div class="col">
+                <label>منصف ٹائم لاک (منٹ):</label>
+                <input type="number" id="timeLockMinutesInput" value="30" min="1" max="1440" placeholder="Lock after X mins">
+            </div>
+            <div class="col">
+                <label>منصف فریش ٹائم (منٹ):</label>
+                <input type="number" id="freshTimeMinutesInput" value="30" min="1" max="1440" placeholder="Fresh time mins">
+            </div>
+            <div class="col">
+                <label>منصف آن سٹارٹ ٹائم:</label>
+                <input type="time" id="monitorStartTimeInput" value="06:00">
+            </div>
+            <div class="col">
+                <label>منصف آن اینڈ ٹائم:</label>
+                <input type="time" id="monitorEndTimeInput" value="20:00">
+            </div>
+            <div class="col">
+                <button class="btn-green" style="margin-top:21px;" onclick="updateSettings()">Update Settings</button>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 10px; background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <div class="col" style="flex:2;">
+                <label style="color:#2563eb;">➕ بلک نام درج کریں (ایک نام فی لائن):</label>
+                <textarea id="bulkPlayerNames" rows="3" placeholder="نام 1&#10;نام 2&#10;نام 3"></textarea>
+                <button class="btn-green" style="margin-top:6px;" onclick="addBulkPlayers()">+ Add Bulk Players (Auto Pass)</button>
+            </div>
+            <div class="col" style="flex:1;">
+                <label>Single Player Name:</label>
+                <input type="text" id="playerName" placeholder="Player name...">
+                <label style="margin-top:6px;">منصف پاسورڈ (اختیاری):</label>
+                <input type="text" id="playerMonitorPass" placeholder="Leave blank for auto...">
+                <button class="btn-blue" style="margin-top:6px;" onclick="addPlayer()">+ Add Single Player</button>
+            </div>
+            <div class="col" style="flex:1;">
+                <label>Flight Date:</label>
+                <input type="date" id="flightDate">
+                <button class="btn-purple" style="margin-top:27px;" onclick="addDate()">+ Add Date</button>
+            </div>
+        </div>
+
+        <div style="margin-top:10px; background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
+            <label style="color:#2563eb; font-size:12px;">👥 Manage Players (Edit Name / Password):</label>
+            <div id="adminPlayerEditList" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:130px; overflow-y:auto;"></div>
+        </div>
+
+        <div style="margin-top:10px; background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
+            <label style="color:var(--primary-color); font-size:12px;">📅 Manage Flight Dates (Edit / Delete Date):</label>
+            <div id="adminDateEditList" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:130px; overflow-y:auto;"></div>
+        </div>
+
+        <button class="btn-danger" style="width:100%; margin-top:10px; padding:10px;" onclick="confirmResetAll()">Reset All Data For This Cup</button>
+    </div>
+
+    <!-- تاریخوں کی بار -->
+    <div class="dates-bar" id="datesContainer"></div>
+
+    <div class="stats-container">
+        <div class="stat-badge badge-lofts">🏠 <span id="statLofts">0</span> LOFTS</div>
+        <div class="stat-badge badge-total">🦅 <span id="statTotalPigeons">0</span> TOTAL PIGEONS</div>
+        <div class="stat-badge badge-landed">☑️ <span id="statLanded">0</span> LANDED</div>
+        <div class="stat-badge badge-remaining">⏱️ <span id="statRemaining">0</span> REMAINING</div>
+        <div class="stat-badge badge-viewers">👁️ <span id="statViewers">1</span> LOCAL OFFLINE</div>
+    </div>
+
+    <!-- فرسٹ اور لاسٹ ونر کا کنٹینر -->
+    <div class="winners-container" id="winnersContainerSection">
+        <div class="winner-card">
+            <div class="winner-info">
+                <img id="firstWinnerImg" class="winner-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>">
+                <div>
+                    <div class="winner-title">🥇 FIRST WINNER</div>
+                    <div class="winner-name" id="firstWinnerName">--</div>
+                </div>
+            </div>
+            <div class="winner-time" id="firstWinnerTime">00:00:00</div>
+        </div>
+        <div class="winner-card">
+            <div class="winner-info">
+                <img id="lastWinnerImg" class="winner-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4 z'/></svg>">
+                <div>
+                    <div class="winner-title">🏆 LAST WINNER</div>
+                    <div class="winner-name" id="lastWinnerName">--</div>
+                </div>
+            </div>
+            <div class="winner-time" id="lastWinnerTime">00:00:00</div>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Search by name...">
+        <div class="action-buttons">
+            <button class="btn-blue" onclick="shareResults()">🔗 Share</button>
+            <button class="btn-orange" onclick="downloadPDF()">📄 Download PDF</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr id="tableHeader"></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="footer-credit">
+        Creator: <b>Muhammad Asif</b> | KHICHI PIGEON CLUB | Contact: <b>03454494106</b>
+    </div>
+</div>
+
+<!-- Master Admin Login Modal -->
+<div class="modal-overlay" id="masterLoginModal">
+    <div class="modal-box">
+        <h3>Master Admin Login</h3>
+        <p>Enter master password to manage cups</p>
+        <input type="password" id="modalMasterPassInput" placeholder="Master Password...">
+        <div class="modal-buttons">
+            <button class="btn-purple" onclick="submitMasterLogin()">Login</button>
+            <button class="btn-danger" onclick="closeModal('masterLoginModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cup Admin Login Modal -->
+<div class="modal-overlay" id="cupLoginModal">
+    <div class="modal-box">
+        <h3>Cup Admin Login</h3>
+        <p>Select your cup and enter its password</p>
+        <select id="loginCupSelect" style="margin-bottom:10px;"></select>
+        <input type="password" id="modalCupPassInput" placeholder="Cup Password...">
+        <div class="modal-buttons">
+            <button class="btn-green" onclick="submitCupLogin()">Login</button>
+            <button class="btn-danger" onclick="closeModal('cupLoginModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Monitor (منصف) Login Modal -->
+<div class="modal-overlay" id="monitorLoginModal">
+    <div class="modal-box">
+        <h3>🛡️ منصف لاگ ان (Monitor Login)</h3>
+        <p>پهلے کپ سلیکٹ کریں، پھر متعلقہ چھت منتخب کریں اور پاسورڈ درج کریں:</p>
+        <label style="font-size:11px; font-weight:700; display:block; text-align:left; margin-bottom:2px;">کپ منتخب کریں:</label>
+        <select id="loginMonitorCupSelect" onchange="populateMonitorPlayers()" style="margin-bottom:10px;"></select>
+        
+        <label style="font-size:11px; font-weight:700; display:block; text-align:left; margin-bottom:2px;">چھت / کھلاڑی منتخب کریں:</label>
+        <select id="loginMonitorPlayerSelect" style="margin-bottom:10px;"></select>
+        
+        <label style="font-size:11px; font-weight:700; display:block; text-align:left; margin-bottom:2px;">چھت کا پاسورڈ:</label>
+        <input type="password" id="modalMonitorPassInput" placeholder="Enter Roof Password...">
+        
+        <div class="modal-buttons">
+            <button class="btn-teal" onclick="submitMonitorLogin()">Login</button>
+            <button class="btn-danger" onclick="closeModal('monitorLoginModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+        <h3 id="confirmTitle">Confirmation</h3>
+        <p id="confirmMessage">Are you sure?</p>
+        <div class="modal-buttons">
+            <button class="btn-danger" id="confirmYesBtn">Yes, Proceed</button>
+            <button class="btn-green" onclick="closeModal('confirmModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="changePhotoInput" accept="image/*" style="display:none;">
+
+<!-- html2pdf Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+    const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+
+    // Default local state
+    let defaultInitialData = {
+        currentCupId: 'cup_default',
+        masterPass: localStorage.getItem('pigeon_master_pass') || "78692",
+        grandMasterPass: localStorage.getItem('pigeon_grand_master_pass') || "786786",
+        masterNews: "خشی پیجن کلب ٹورنامنٹ میں خوش آمدید! تمام لائیو اپڈیٹس یہاں جاری ہیں۔",
+        cups: {
+            'cup_default': {
+                id: 'cup_default',
+                title: 'پیجن ٹورنامنٹ چیمپئن شپ 2026',
+                password: '786',
+                liveNews: '🏆 پیجن ٹورنامنٹ چیمپئن شپ میں خوش آمدید! لائیو اپڈیٹس جاری ہیں۔',
+                pigeonCount: 7,
+                startTime: '05:00',
+                endTime: '18:00',
+                minFlightMinutes: 120,
+                timeLockMinutes: 30,
+                freshTimeMinutes: 30,
+                monitorStartTime: '06:00',
+                monitorEndTime: '20:00',
+                dates: ['Day 1'],
+                players: [],
+                timestamps: {}
+            }
+        }
+    };
+
+    let savedDataStr = localStorage.getItem('khichi_pigeon_offline_data');
+    let multiCupData = savedDataStr ? JSON.parse(savedDataStr) : defaultInitialData;
+
+    let selectedTab = 'Total';
+    let currentPhotoChangePlayerId = null;
+    let isAdminLoggedIn = false;
+    let isMasterAdmin = false;
+    let isMonitorLoggedIn = false;
+    let monitoredPlayerId = null; 
+    let confirmCallback = null;
+    let isInputFocused = false;
+
+    function showToast(message) {
+        let container = document.getElementById('toastContainer');
+        let toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerHTML = `✅ ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    function toggleTheme() {
+        let body = document.body;
+        let btn = document.getElementById('themeToggleBtn');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            btn.innerHTML = '🌙 Dark Mode';
+            localStorage.setItem('pigeon_theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            btn.innerHTML = '☀️ Light Mode';
+            localStorage.setItem('pigeon_theme', 'dark');
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        let savedTheme = localStorage.getItem('pigeon_theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeToggleBtn').innerHTML = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+
+        document.getElementById('changePhotoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentPhotoChangePlayerId) {
+                compressImage(file, function(compressedDataUrl) {
+                    let cup = getCurrentCup();
+                    if (cup && cup !== 'ALL_CUPS_MASTER') {
+                        if (!cup.players) cup.players = [];
+                        const player = cup.players.find(p => p.id === currentPhotoChangePlayerId);
+                        if (player) {
+                            player.photo = compressedDataUrl;
+                            saveData();
+                            showToast("کھلاڑی کی تصویر کامیابی سے تبدیل کر دی گئی ہے!");
+                        }
+                    }
+                });
+            }
+        });
+
+        renderCupsBar();
+        loadCurrentCupUI();
+    });
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function showConfirmModal(title, message, onConfirm) {
+        document.getElementById('confirmTitle').innerText = title;
+        document.getElementById('confirmMessage').innerText = message;
+        confirmCallback = onConfirm;
+        document.getElementById('confirmModal').style.display = 'flex';
+    }
+
+    document.getElementById('confirmYesBtn').addEventListener('click', () => {
+        if (confirmCallback) confirmCallback();
+        closeModal('confirmModal');
+    });
+
+    function compressImage(file, callback) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 120;
+                const MAX_HEIGHT = 120;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                callback(dataUrl);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function saveData() {
+        localStorage.setItem('khichi_pigeon_offline_data', JSON.stringify(multiCupData));
+        renderCupsBar();
+        if (!isInputFocused) {
+            loadCurrentCupUI();
+        }
+    }
+
+    function getCurrentCup() {
+        if (multiCupData.currentCupId === 'ALL_CUPS_MASTER') return 'ALL_CUPS_MASTER';
+        if (!multiCupData.currentCupId || !multiCupData.cups[multiCupData.currentCupId]) {
+            let keys = Object.keys(multiCupData.cups);
+            if (keys.length > 0) multiCupData.currentCupId = keys[0];
+            else return null;
+        }
+        let cup = multiCupData.cups[multiCupData.currentCupId];
+        if (!cup.players) cup.players = [];
+        if (!cup.dates) cup.dates = [];
+        if (!cup.timestamps) cup.timestamps = {};
+        if (cup.timeLockMinutes === undefined) cup.timeLockMinutes = 30;
+        if (cup.freshTimeMinutes === undefined) cup.freshTimeMinutes = 30;
+        if (cup.minFlightMinutes === undefined) cup.minFlightMinutes = 120;
+        if (!cup.monitorStartTime) cup.monitorStartTime = "06:00";
+        if (!cup.monitorEndTime) cup.monitorEndTime = "20:00";
+        return cup;
+    }
+
+    function renderCupsBar() {
+        const container = document.getElementById('cupsContainer');
+        let cupKeys = Object.keys(multiCupData.cups);
+        if (cupKeys.length === 0) {
+            container.innerHTML = '<span style="color:#94a3b8; font-size:11px; font-weight:bold;">No cups available. Master Admin can add cups.</span>';
+            return;
+        }
+        let html = '<span style="color:#94a3b8; font-size:11px; font-weight:bold; margin-right:5px;">Cups:</span>';
+        
+        let isAllActive = (multiCupData.currentCupId === 'ALL_CUPS_MASTER') ? 'active' : '';
+        html += `<button class="cup-tab all-cups-tab ${isAllActive}" onclick="switchCup('ALL_CUPS_MASTER')">🌐 تمام کپوں کا اکٹھا ڈیٹا (All Cups)</button>`;
+
+        for (let cupId in multiCupData.cups) {
+            let c = multiCupData.cups[cupId];
+            let isActive = (cupId === multiCupData.currentCupId) ? 'active' : '';
+            html += `<button class="cup-tab ${isActive}" onclick="switchCup('${cupId}')">🏆 ${c.title}</button>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function switchCup(cupId) {
+        multiCupData.currentCupId = cupId;
+        selectedTab = 'Total';
+        if (!isMasterAdmin && !isMonitorLoggedIn) {
+            isAdminLoggedIn = false;
+            document.getElementById('controlPanel').classList.remove('active-admin');
+        }
+        renderCupsBar();
+        loadCurrentCupUI();
+    }
+
+    function loadCurrentCupUI() {
+        let tickerMarquee = document.getElementById('liveNewsMarquee');
+        let newsInput = document.getElementById('cupLiveNewsInput');
+
+        if (multiCupData.currentCupId === 'ALL_CUPS_MASTER') {
+            document.getElementById('bannerTitle').innerText = "🌐 تمام کپوں کا اکٹھا ماسٹر لیڈر بورڈ (All Cups Grand View)";
+            document.getElementById('dispTimes').innerText = "All Cups Combined Rankings & Winners";
+            document.getElementById('datesContainer').innerHTML = '';
+            
+            let masterNewsText = multiCupData.masterNews || "تمام کپوں کے لائیو نتائج اور ماسٹر لیڈر بورڈ میں خوش آمدید!";
+            tickerMarquee.innerText = masterNewsText;
+            newsInput.value = masterNewsText;
+
+            renderAllCupsTable();
+            return;
+        }
+
+        let cup = getCurrentCup();
+        if (!cup) {
+            document.getElementById('bannerTitle').innerText = "کوئی کپ موجود نہیں (No Cup Selected)";
+            document.getElementById('dispTimes').innerText = "Master Admin can add a new cup.";
+            document.getElementById('datesContainer').innerHTML = '';
+            document.getElementById('tableHeader').innerHTML = '<th>Message</th>';
+            document.getElementById('tableBody').innerHTML = '<tr><td>براہ کرم ماسٹر ایڈمن لاگ ان کر کے نیا کپ بنائیں۔</td></tr>';
+            return;
+        }
+        
+        let cupNews = cup.liveNews || `🏆 ${cup.title} میں خوش آمدید! لائیو اپڈیٹس جاری ہیں۔`;
+        tickerMarquee.innerText = cupNews;
+        newsInput.value = cup.liveNews || '';
+
+        document.getElementById('bannerTitle').innerText = cup.title;
+        document.getElementById('clubName').value = cup.title;
+        document.getElementById('pigeonCount').value = cup.pigeonCount || 7;
+        document.getElementById('startTimeInput').value = cup.startTime || '05:00';
+        document.getElementById('endTimeInput').value = cup.endTime || '18:00';
+        
+        document.getElementById('minFlightMinutesInput').value = cup.minFlightMinutes !== undefined ? cup.minFlightMinutes : 120;
+        document.getElementById('timeLockMinutesInput').value = cup.timeLockMinutes !== undefined ? cup.timeLockMinutes : 30;
+        document.getElementById('freshTimeMinutesInput').value = cup.freshTimeMinutes !== undefined ? cup.freshTimeMinutes : 30;
+        document.getElementById('monitorStartTimeInput').value = cup.monitorStartTime || '06:00';
+        document.getElementById('monitorEndTimeInput').value = cup.monitorEndTime || '20:00';
+        
+        renderAdminPlayerList();
+        renderAdminDateList();
+        renderTabs();
+        renderTable();
+    }
+
+    function updateCupLiveNews() {
+        if (!isAdminLoggedIn) return alert("Permission denied!");
+        let newsText = document.getElementById('cupLiveNewsInput').value.trim();
+        
+        if (multiCupData.currentCupId === 'ALL_CUPS_MASTER') {
+            multiCupData.masterNews = newsText;
+            saveData();
+            showToast("ماسٹر لائیو نیوز کامیابی سے اپڈیٹ کر دی گئی ہے!");
+            loadCurrentCupUI();
+            return;
+        }
+
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return;
+
+        cup.liveNews = newsText;
+        saveData();
+        showToast("اس کپ کی لائیو نیوز کامیابی سے اپڈیٹ کر دی گئی ہے!");
+        loadCurrentCupUI();
+    }
+
+    function renderAdminPlayerList() {
+        const container = document.getElementById('adminPlayerEditList');
+        let cup = getCurrentCup();
+        if (cup === 'ALL_CUPS_MASTER') return;
+        if (!cup || !cup.players || cup.players.length === 0) {
+            container.innerHTML = '<span style="font-size:11px; color:#64748b;">کوئی کھلاڑی موجود نہیں</span>';
+            return;
+        }
+        let html = '';
+        cup.players.forEach(p => {
+            html += `<div style="display:flex; gap:6px; align-items:center;">
+                <input type="text" id="edit_name_${p.id}" value="${p.name}" style="flex:2; padding:5px; font-size:11px;" placeholder="Name">
+                <input type="text" id="edit_pass_${p.id}" value="${p.monitorPass || '786'}" style="flex:1; padding:5px; font-size:11px;" placeholder="Password">
+                <button class="btn-green" style="padding:5px 10px; font-size:11px;" onclick="savePlayerEdits(${p.id})">Update</button>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderAdminDateList() {
+        const container = document.getElementById('adminDateEditList');
+        let cup = getCurrentCup();
+        if (cup === 'ALL_CUPS_MASTER') return;
+        if (!cup || !cup.dates || cup.dates.length === 0) {
+            container.innerHTML = '<span style="font-size:11px; color:#64748b;">کوئی فلائٹ تاریخ موجود نہیں</span>';
+            return;
+        }
+        let html = '';
+        cup.dates.forEach((d, index) => {
+            html += `<div style="display:flex; gap:6px; align-items:center;">
+                <input type="text" id="edit_date_val_${index}" value="${d}" style="flex:2; padding:5px; font-size:11px;" placeholder="Date Name">
+                <button class="btn-green" style="padding:5px 10px; font-size:11px;" onclick="saveDateEdit('${d}', ${index})">Update</button>
+                <button class="btn-danger" style="padding:5px 10px; font-size:11px;" onclick="confirmDeleteDate('${d}')">Del</button>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function saveDateEdit(oldDateName, index) {
+        if (!isAdminLoggedIn) return alert("Permission denied!");
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return;
+        let newDateName = document.getElementById(`edit_date_val_${index}`).value.trim();
+
+        if (!newDateName) return alert("تاریخ کا نام خالی نہیں ہو سکتا!");
+        if (oldDateName === newDateName) return;
+
+        if (cup.dates.includes(newDateName)) {
+            return alert("یہ تاریخ پہلے سے موجود ہے!");
+        }
+
+        let dateIdx = cup.dates.indexOf(oldDateName);
+        if (dateIdx !== -1) {
+            cup.dates[dateIdx] = newDateName;
+        }
+
+        if (cup.players) {
+            cup.players.forEach(p => {
+                if (p.flights && p.flights[oldDateName]) {
+                    p.flights[newDateName] = p.flights[oldDateName];
+                    delete p.flights[oldDateName];
+                }
+            });
+        }
+
+        if (cup.timestamps) {
+            let newTimestamps = {};
+            for (let key in cup.timestamps) {
+                let parts = key.split('_');
+                if (parts[1] === oldDateName) {
+                    parts[1] = newDateName;
+                    let newKey = parts.join('_');
+                    newTimestamps[newKey] = cup.timestamps[key];
+                } else {
+                    newTimestamps[key] = cup.timestamps[key];
+                }
+            }
+            cup.timestamps = newTimestamps;
+        }
+
+        if (selectedTab === oldDateName) {
+            selectedTab = newDateName;
+        }
+
+        saveData();
+        showToast("تاریخ کامیابی سے اپڈیٹ ہو گئی ہے!");
+    }
+
+    function confirmDeleteDate(dateName) {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) return alert("Permission denied!");
+        showConfirmModal('Delete Date', `کیا آپ واقعی تاریخ '${dateName}' کو ڈیلیٹ کرنا چاہتے ہیں؟`, function() {
+            let cup = getCurrentCup();
+            if (!cup || cup === 'ALL_CUPS_MASTER') return;
+
+            cup.dates = cup.dates.filter(d => d !== dateName);
+
+            if (cup.players) {
+                cup.players.forEach(p => {
+                    if (p.flights && p.flights[dateName]) {
+                        delete p.flights[dateName];
+                    }
+                });
+            }
+
+            if (cup.timestamps) {
+                let newTimestamps = {};
+                for (let key in cup.timestamps) {
+                    let parts = key.split('_');
+                    if (parts[1] !== dateName) {
+                        newTimestamps[key] = cup.timestamps[key];
+                    }
+                }
+                cup.timestamps = newTimestamps;
+            }
+
+            if (selectedTab === dateName) {
+                selectedTab = 'Total';
+            }
+
+            saveData();
+            showToast("تاریخ کامیابی سے ڈیلیٹ کر دی گئی ہے!");
+        });
+    }
+
+    function savePlayerEdits(playerId) {
+        if (!isAdminLoggedIn) return alert("Permission denied!");
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return;
+        let player = cup.players.find(p => p.id === playerId);
+        if (!player) return;
+
+        let newName = document.getElementById(`edit_name_${playerId}`).value.trim();
+        let newPass = document.getElementById(`edit_pass_${playerId}`).value.trim();
+
+        if (!newName || !newPass) return alert("نام اور پاسورڈ خالی نہیں ہو سکتا!");
+        
+        player.name = newName;
+        player.monitorPass = newPass;
+        saveData();
+        showToast("کھلاڑی کی معلومات کامیابی سے اپڈیٹ ہو گئی ہیں!");
+    }
+
+    function addNewCup() {
+        if (!isMasterAdmin) return;
+        let name = document.getElementById('newCupNameInput').value.trim();
+        let pass = document.getElementById('newCupPassInput').value.trim();
+        if (!name || !pass) return alert("Please enter both cup name and password!");
+        let newId = 'cup_' + Date.now();
+        multiCupData.cups[newId] = { 
+            id: newId, 
+            title: name, 
+            password: pass, 
+            liveNews: `🏆 ${name} کا آغاز ہو چکا ہے! لائیو اپڈیٹس جاری ہیں۔`,
+            pigeonCount: 7, 
+            startTime: '05:00', 
+            endTime: '18:00', 
+            minFlightMinutes: 120,
+            timeLockMinutes: 30,
+            freshTimeMinutes: 30,
+            monitorStartTime: '06:00',
+            monitorEndTime: '20:00',
+            dates: [], 
+            players: [], 
+            timestamps: {} 
+        };
+        multiCupData.currentCupId = newId;
+        document.getElementById('newCupNameInput').value = '';
+        document.getElementById('newCupPassInput').value = '';
+        saveData();
+        showToast("نیا کپ کامیابی سے بنا دیا گیا ہے!");
+    }
+
+    function confirmDeleteCurrentCup() {
+        if (!isMasterAdmin) return;
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return alert("No cup selected to delete!");
+        showConfirmModal('Delete Current Cup', 'Are you sure you want to delete this cup?', function() {
+            delete multiCupData.cups[multiCupData.currentCupId];
+            let keys = Object.keys(multiCupData.cups);
+            multiCupData.currentCupId = keys.length > 0 ? keys[0] : '';
+            saveData();
+            showToast("کپ کامیابی سے ڈیلیٹ کر دیا گیا ہے!");
+        });
+    }
+
+    function updateCurrentCupPassword() {
+        if (!isMasterAdmin) return;
+        let newPass = document.getElementById('changeCupPassInput').value.trim();
+        if (!newPass) return alert("Please enter a new password!");
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return alert("No cup selected!");
+        cup.password = newPass;
+        document.getElementById('changeCupPassInput').value = '';
+        saveData();
+        showToast("کپ کا پاسورڈ کامیابی سے تبدیل کر دیا گیا ہے!");
+    }
+
+    function updateMasterPassword() {
+        if (!isMasterAdmin) return;
+        let oldPassVerify = document.getElementById('oldMasterPassVerify').value.trim();
+        let newMaster = document.getElementById('newMasterPassInput').value.trim();
+        let grandMasterKey = multiCupData.grandMasterPass || "786786";
+
+        if (oldPassVerify !== grandMasterKey) {
+            return alert("غلط گرینڈ ماسٹر پاسورڈ!");
+        }
+        if (!newMaster) return alert("Please enter a new master password!");
+
+        multiCupData.masterPass = newMaster;
+        localStorage.setItem('pigeon_master_pass', newMaster);
+        document.getElementById('oldMasterPassVerify').value = '';
+        document.getElementById('newMasterPassInput').value = '';
+        saveData();
+        showToast("ماسٹر پاسورڈ کامیابی سے اپڈیٹ ہو گیا ہے!");
+    }
+
+    function updateGrandMasterPassword() {
+        if (!isMasterAdmin) return;
+        let oldGrandPass = document.getElementById('oldGrandMasterPass').value.trim();
+        let newGrandPass = document.getElementById('newGrandMasterPass').value.trim();
+        let currentGrandMasterKey = multiCupData.grandMasterPass || "786786";
+
+        if (oldGrandPass !== currentGrandMasterKey) {
+            return alert("پرانا گرینڈ ماسٹر پاسورڈ غلط ہے!");
+        }
+        if (!newGrandPass) return alert("Please enter a new grand master password!");
+
+        multiCupData.grandMasterPass = newGrandPass;
+        localStorage.setItem('pigeon_grand_master_pass', newGrandPass);
+        document.getElementById('oldGrandMasterPass').value = '';
+        document.getElementById('newGrandMasterPass').value = '';
+        saveData();
+        showToast("گرینڈ ماسٹر پاسورڈ کامیابی سے اپڈیٹ ہو گیا ہے!");
+    }
+
+    function openMasterLoginModal() {
+        if (isMasterAdmin && isAdminLoggedIn) {
+            document.getElementById('controlPanel').classList.toggle('active-admin');
+        } else {
+            document.getElementById('modalMasterPassInput').value = '';
+            document.getElementById('masterLoginModal').style.display = 'flex';
+        }
+    }
+
+    function submitMasterLogin() {
+        let pass = document.getElementById('modalMasterPassInput').value.trim();
+        let masterKey = multiCupData.masterPass || "78692";
+        let grandMasterKey = multiCupData.grandMasterPass || "786786";
+
+        if (pass === masterKey || pass === grandMasterKey) {
+            isMasterAdmin = true;
+            isAdminLoggedIn = true;
+            isMonitorLoggedIn = false;
+            monitoredPlayerId = null;
+            document.getElementById('masterOnlySection').style.display = 'block';
+            document.getElementById('panelTitle').innerText = "⚙️ Master Admin Panel (Full Control)";
+            document.getElementById('controlPanel').classList.add('active-admin');
+            closeModal('masterLoginModal');
+            loadCurrentCupUI();
+            showToast("آپ کامیابی سے ماسٹر ایڈمن لاگ ان ہو گئے ہیں!");
+        } else {
+            alert("Incorrect master password!");
+        }
+    }
+
+    function openCupLoginModal() {
+        let cupKeys = Object.keys(multiCupData.cups);
+        if (cupKeys.length === 0) {
+            return alert("No cups available! Master Admin must create a cup first.");
+        }
+        let select = document.getElementById('loginCupSelect');
+        select.innerHTML = '';
+        cupKeys.forEach(cupId => {
+            let c = multiCupData.cups[cupId];
+            let opt = document.createElement('option');
+            opt.value = cupId;
+            opt.text = "Cup: " + c.title;
+            if (cupId === multiCupData.currentCupId) opt.selected = true;
+            select.appendChild(opt);
+        });
+        document.getElementById('modalCupPassInput').value = '';
+        document.getElementById('cupLoginModal').style.display = 'flex';
+    }
+
+    function submitCupLogin() {
+        let selectedCupId = document.getElementById('loginCupSelect').value;
+        let pass = document.getElementById('modalCupPassInput').value.trim();
+        let targetCup = multiCupData.cups[selectedCupId];
+
+        if (targetCup && pass === targetCup.password) {
+            isMasterAdmin = false;
+            isAdminLoggedIn = true;
+            isMonitorLoggedIn = false;
+            monitoredPlayerId = null;
+            multiCupData.currentCupId = selectedCupId;
+            document.getElementById('masterOnlySection').style.display = 'none';
+            document.getElementById('panelTitle').innerText = `⚙️ Cup Admin Panel (${targetCup.title})`;
+            document.getElementById('controlPanel').classList.add('active-admin');
+            closeModal('cupLoginModal');
+            loadCurrentCupUI();
+            showToast("آپ کامیابی سے کپ ایڈمن لاگ ان ہو گئے ہیں!");
+        } else {
+            alert("Incorrect cup password!");
+        }
+    }
+
+    function openMonitorLoginModal() {
+        let cupKeys = Object.keys(multiCupData.cups);
+        if (cupKeys.length === 0) {
+            return alert("کوئی کپ موجود نہیں ہے!");
+        }
+        
+        let targetCup = multiCupData.cups[multiCupData.currentCupId] || multiCupData.cups[cupKeys[0]];
+        if (targetCup && targetCup.monitorStartTime && targetCup.monitorEndTime) {
+            let now = new Date();
+            let currentHoursMinutes = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            if (currentHoursMinutes < targetCup.monitorStartTime || currentHoursMinutes > targetCup.monitorEndTime) {
+                return alert(`منصف لاگ ان کا وقت (${targetCup.monitorStartTime} سے ${targetCup.monitorEndTime}) تک ہے۔`);
+            }
+        }
+
+        let select = document.getElementById('loginMonitorCupSelect');
+        select.innerHTML = '';
+        cupKeys.forEach(cupId => {
+            let c = multiCupData.cups[cupId];
+            let opt = document.createElement('option');
+            opt.value = cupId;
+            opt.text = "Cup: " + c.title;
+            if (cupId === multiCupData.currentCupId) opt.selected = true;
+            select.appendChild(opt);
+        });
+        
+        populateMonitorPlayers();
+        document.getElementById('modalMonitorPassInput').value = '';
+        document.getElementById('monitorLoginModal').style.display = 'flex';
+    }
+
+    function populateMonitorPlayers() {
+        let selectedCupId = document.getElementById('loginMonitorCupSelect').value;
+        let targetCup = multiCupData.cups[selectedCupId];
+        let playerSelect = document.getElementById('loginMonitorPlayerSelect');
+        playerSelect.innerHTML = '';
+
+        if (!targetCup || !targetCup.players || targetCup.players.length === 0) {
+            let opt = document.createElement('option');
+            opt.value = "";
+            opt.text = "اس کپ میں کوئی چھت/کھلاڑی نہیں ہے";
+            playerSelect.appendChild(opt);
+            return;
+        }
+
+        targetCup.players.forEach(p => {
+            let opt = document.createElement('option');
+            opt.value = p.id;
+            opt.text = "چھت / کھلاڑی: " + p.name;
+            playerSelect.appendChild(opt);
+        });
+    }
+
+    function submitMonitorLogin() {
+        let selectedCupId = document.getElementById('loginMonitorCupSelect').value;
+        let selectedPlayerId = parseInt(document.getElementById('loginMonitorPlayerSelect').value);
+        let pass = document.getElementById('modalMonitorPassInput').value.trim();
+
+        let targetCup = multiCupData.cups[selectedCupId];
+        if (!targetCup) return alert("منتخب کردہ کپ موجود نہیں!");
+
+        if (targetCup.monitorStartTime && targetCup.monitorEndTime) {
+            let now = new Date();
+            let currentHoursMinutes = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            if (currentHoursMinutes < targetCup.monitorStartTime || currentHoursMinutes > targetCup.monitorEndTime) {
+                return alert(`منصف لاگ ان کا وقت (${targetCup.monitorStartTime} سے ${targetCup.monitorEndTime}) تک ہے۔`);
+            }
+        }
+        
+        let targetPlayer = targetCup.players.find(p => p.id === selectedPlayerId);
+        if (!targetPlayer) return alert("براہ کرم درست چھت منتخب کریں!");
+
+        let correctPass = targetPlayer.monitorPass || "786";
+        if (pass === correctPass) {
+            isMonitorLoggedIn = true;
+            isAdminLoggedIn = true; 
+            isMasterAdmin = false;
+            multiCupData.currentCupId = selectedCupId;
+            monitoredPlayerId = targetPlayer.id;
+            document.getElementById('controlPanel').classList.remove('active-admin'); 
+            closeModal('monitorLoginModal');
+            loadCurrentCupUI();
+            showToast(`آپ کامیابی سے بطور منصف (${targetPlayer.name} کی چھت) لاگ ان ہو گئے ہیں!`);
+        } else {
+            alert("اس چھت کا پاسورڈ غلط ہے!");
+        }
+    }
+
+    function adminLogout() {
+        isAdminLoggedIn = false;
+        isMasterAdmin = false;
+        isMonitorLoggedIn = false;
+        monitoredPlayerId = null;
+        document.getElementById('controlPanel').classList.remove('active-admin');
+        loadCurrentCupUI();
+        showToast("آپ کامیابی سے لاگ آؤٹ ہو گئے ہیں!");
+    }
+
+    function updateSettings() {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) return alert("Permission denied!");
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return;
+        cup.title = document.getElementById('clubName').value.trim() || cup.title;
+        cup.pigeonCount = parseInt(document.getElementById('pigeonCount').value) || 7;
+        cup.startTime = document.getElementById('startTimeInput').value || '05:00';
+        cup.endTime = document.getElementById('endTimeInput').value || '18:00';
+        
+        cup.minFlightMinutes = parseInt(document.getElementById('minFlightMinutesInput').value) || 120;
+        cup.timeLockMinutes = parseInt(document.getElementById('timeLockMinutesInput').value) || 30;
+        cup.freshTimeMinutes = parseInt(document.getElementById('freshTimeMinutesInput').value) || 30;
+        cup.monitorStartTime = document.getElementById('monitorStartTimeInput').value || '06:00';
+        cup.monitorEndTime = document.getElementById('monitorEndTimeInput').value || '20:00';
+
+        saveData();
+        showToast("سیٹنگز کامیابی سے اپڈیٹ کر دی گئی ہیں!");
+    }
+
+    function addPlayer() {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) {
+            alert("Please login as Admin first!");
+            return;
+        }
+        const name = document.getElementById('playerName').value.trim();
+        let monitorPass = document.getElementById('playerMonitorPass').value.trim();
+        if (!name) return alert("Please enter player name!");
+        
+        if (!monitorPass) {
+            monitorPass = Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return alert("No cup selected!");
+        if (!cup.players) cup.players = [];
+
+        savePlayerObj(cup, name, monitorPass, defaultAvatar);
+    }
+
+    function addBulkPlayers() {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) {
+            alert("Please login as Admin first!");
+            return;
+        }
+        const bulkText = document.getElementById('bulkPlayerNames').value.trim();
+        if (!bulkText) return alert("براہ کرم کم از کم ایک نام درج کریں!");
+
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return alert("No cup selected!");
+        if (!cup.players) cup.players = [];
+
+        let lines = bulkText.split('\n');
+        let addedCount = 0;
+
+        lines.forEach(line => {
+            let name = line.trim();
+            if (name !== "") {
+                let autoNumericPass = Math.floor(1000 + Math.random() * 9000).toString();
+                
+                while (cup.players.some(p => p.monitorPass === autoNumericPass)) {
+                    autoNumericPass = Math.floor(1000 + Math.random() * 9000).toString();
+                }
+
+                let newPlayer = { id: Date.now() + Math.random(), name: name, monitorPass: autoNumericPass, photo: defaultAvatar, flights: {} };
+                
+                if (cup.dates && cup.dates.length > 0) {
+                    cup.dates.forEach(d => {
+                        newPlayer.flights[d] = new Array(cup.pigeonCount || 7).fill('');
+                    });
+                }
+                cup.players.push(newPlayer);
+                addedCount++;
+            }
+        });
+
+        if (addedCount > 0) {
+            document.getElementById('bulkPlayerNames').value = '';
+            saveData();
+            showToast(`${addedCount} کھلاڑی کامیابی سے شامل کر دیے گئے ہیں!`);
+        } else {
+            alert("کوئی درست نام نہیں ملا!");
+        }
+    }
+
+    function savePlayerObj(cup, name, monitorPass, photoData) {
+        let newPlayer = { id: Date.now(), name: name, monitorPass: monitorPass, photo: photoData, flights: {} };
+        cup.players.push(newPlayer);
+        
+        if (cup.dates && cup.dates.length > 0) {
+            cup.dates.forEach(d => {
+                if (!newPlayer.flights) newPlayer.flights = {};
+                if (!newPlayer.flights[d]) {
+                    newPlayer.flights[d] = new Array(cup.pigeonCount || 7).fill('');
+                }
+            });
+        }
+
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerMonitorPass').value = '';
+        saveData();
+        showToast("کھلاڑی کامیابی سے شامل کر دیا گیا ہے!");
+    }
+
+    function triggerPhotoUpload(playerId) {
+        if (!isAdminLoggedIn) return;
+        if (isMonitorLoggedIn && monitoredPlayerId !== playerId) return;
+        currentPhotoChangePlayerId = playerId;
+        document.getElementById('changePhotoInput').click();
+    }
+
+    function addDate() {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) {
+            alert("Please login first to add a date!");
+            return;
+        }
+        const dateVal = document.getElementById('flightDate').value;
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return alert("No cup selected!");
+        if (!cup.dates) cup.dates = [];
+
+        let dateName = dateVal ? dateVal : `Flight ${cup.dates.length + 1}`;
+        if (!cup.dates.includes(dateName)) {
+            cup.dates.push(dateName);
+            
+            if (cup.players && cup.players.length > 0) {
+                cup.players.forEach(p => {
+                    if (!p.flights) p.flights = {};
+                    p.flights[dateName] = new Array(cup.pigeonCount || 7).fill('');
+                });
+            }
+
+            selectedTab = dateName;
+            saveData();
+            showToast("فلائٹ تاریخ کامیابی سے شامل کر دی گئی ہے!");
+        } else {
+            alert("This date already exists!");
+        }
+    }
+
+    function renderTabs() {
+        let cup = getCurrentCup();
+        const container = document.getElementById('datesContainer');
+        if (!cup || cup === 'ALL_CUPS_MASTER') {
+            container.innerHTML = '';
+            return;
+        }
+        if (!cup.dates) cup.dates = [];
+        let html = '';
+        cup.dates.forEach(d => { html += `<button class="date-tab ${selectedTab === d ? 'active' : ''}" onclick="switchTab('${d}')">${d}</button>`; });
+        html += `<button class="date-tab total-tab ${selectedTab === 'Total' ? 'active' : ''}" onclick="switchTab('Total')">Total</button>`;
+        container.innerHTML = html;
+    }
+
+    function switchTab(tabName) {
+        selectedTab = tabName;
+        renderTabs();
+        renderTable();
+    }
+
+    function calculateMinutes(startTime, landingTime, minFlightMinutes) {
+        if (!landingTime) return 0;
+        const [sH, sM] = startTime.split(':').map(Number);
+        const [lH, lM] = landingTime.split(':').map(Number);
+        let startInMin = sH * 60 + sM;
+        let landInMin = lH * 60 + lM;
+        if (landInMin < startInMin) landInMin += 24 * 60;
+        
+        let flightDuration = landInMin - startInMin;
+        
+        if (minFlightMinutes !== undefined && flightDuration < minFlightMinutes) {
+            return 0; 
+        }
+        return flightDuration;
+    }
+
+    function handleInputFocus() {
+        isInputFocused = true;
+    }
+
+    function handleInputBlur(playerId, dateName, pigeonIdx, timeValue) {
+        isInputFocused = false;
+        let cup = getCurrentCup();
+        if (!cup || cup === 'ALL_CUPS_MASTER') return;
+
+        if (isMonitorLoggedIn && cup.monitorStartTime && cup.monitorEndTime) {
+            let now = new Date();
+            let currentHoursMinutes = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            if (currentHoursMinutes < cup.monitorStartTime || currentHoursMinutes > cup.monitorEndTime) {
+                alert(`منصف کے کام کرنے کا مقررہ وقت ختم ہو چکا ہے۔`);
+                renderTable();
+                return;
+            }
+        }
+
+        let cellKey = `${playerId}_${dateName}_${pigeonIdx}`;
+        if (!cup.timestamps) cup.timestamps = {};
+
+        let entryTime = cup.timestamps[cellKey];
+        let lockLimitMins = cup.timeLockMinutes !== undefined ? cup.timeLockMinutes : 30;
+
+        if (entryTime && isMonitorLoggedIn) {
+            let elapsedMinutes = (Date.now() - entryTime) / (1000 * 60);
+            if (elapsedMinutes > lockLimitMins) {
+                alert(`یہ ٹائم اب لاک ہو چکا ہے، آپ تبدیل نہیں کر سکتے!`);
+                renderTable();
+                return;
+            }
+        }
+
+        if (isMonitorLoggedIn && monitoredPlayerId !== playerId) {
+            alert("آپ کو صرف اپنے مقرر کردہ کھلاڑی کی چھت میں ڈیٹا درج کرنے کی اجازت ہے!");
+            renderTable();
+            return;
+        }
+
+        if (!cup.players) cup.players = [];
+        const playerIndex = cup.players.findIndex(p => p.id === playerId);
+        if (playerIndex === -1) return;
+        
+        const player = cup.players[playerIndex];
+        if (!player.flights) player.flights = {};
+        if (!player.flights[dateName]) {
+            player.flights[dateName] = new Array(cup.pigeonCount || 7).fill('');
+        }
+        
+        player.flights[dateName][pigeonIdx] = timeValue;
+        
+        if (timeValue && !entryTime) {
+            cup.timestamps[cellKey] = Date.now();
+        } else if (!timeValue) {
+            delete cup.timestamps[cellKey];
+        }
+
+        saveData();
+        renderTable();
+        showToast("ٹائم کامیابی سے محفوظ کر لیا گیا ہے!");
+    }
+
+    function formatMinsToHours(totalMins) {
+        const h = Math.floor(totalMins / 60);
+        const m = totalMins % 60;
+        return `${h}:${m < 10 ? '0' : ''}${m}:00`;
+    }
+
+    function renderAllCupsTable() {
+        document.getElementById('winnersContainerSection').style.display = 'none';
+        const thead = document.getElementById('tableHeader');
+        const tbody = document.getElementById('tableBody');
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        tbody.innerHTML = '';
+
+        let allPlayersCombined = [];
+        let totalLoftsCount = 0;
+        let grandTotalPigeonsCount = 0;
+        let totalLandedCount = 0;
+
+        for (let cupId in multiCupData.cups) {
+            let c = multiCupData.cups[cupId];
+            if (!c.players) c.players = [];
+            totalLoftsCount += c.players.length;
+            let cPigeonCount = c.pigeonCount || 7;
+            let cDatesCount = c.dates ? c.dates.length : 0;
+            let cMinFlight = c.minFlightMinutes !== undefined ? c.minFlightMinutes : 120;
+            grandTotalPigeonsCount += c.players.length * cPigeonCount * (cDatesCount || 1);
+
+            c.players.forEach(p => {
+                let totalMins = 0;
+                if (c.dates) {
+                    c.dates.forEach(d => {
+                        if (p.flights && p.flights[d]) {
+                            let times = p.flights[d].filter(t => t !== '' && t !== undefined).sort();
+                            if (times.length > 0) {
+                                totalLandedCount += times.length;
+                            }
+                            p.flights[d].forEach(lTime => {
+                                totalMins += calculateMinutes(c.startTime || '05:00', lTime, cMinFlight);
+                            });
+                        }
+                    });
+                }
+                allPlayersCombined.push({
+                    name: p.name,
+                    cupTitle: c.title,
+                    photo: p.photo || defaultAvatar,
+                    totalMins: totalMins
+                });
+            });
+        }
+
+        allPlayersCombined.sort((a, b) => b.totalMins - a.totalMins);
+
+        thead.innerHTML = `<th>Sr</th><th>کھلاڑی / چھت کا نام</th><th>کپ کا نام</th><th>کل اڑان کا وقت</th>`;
+
+        let filtered = allPlayersCombined.filter(item => item.name.toLowerCase().includes(searchQuery) || item.cupTitle.toLowerCase().includes(searchQuery));
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="padding:15px; color:var(--text-muted);">کوئی ڈیٹا موجود نہیں ہے یا تمام کپ خالی ہیں۔</td></tr>';
+        } else {
+            filtered.forEach((item, idx) => {
+                let tr = document.createElement('tr');
+                if (idx === 0 && item.totalMins > 0) tr.className = 'pos-1';
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>
+                        <div class="player-cell">
+                            <img src="${item.photo}" class="player-img">
+                            <span><b>${item.name}</b> ${idx === 0 && item.totalMins > 0 ? '👑 (گرینڈ چیمپیئن)' : ''}</span>
+                        </div>
+                    </td>
+                    <td><span style="background:var(--table-header-bg); padding:4px 8px; border-radius:4px; font-weight:bold; color:var(--primary-color);">🏆 ${item.cupTitle}</span></td>
+                    <td><div class="total-badge">${formatMinsToHours(item.totalMins)}</div></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('statLofts').innerText = totalLoftsCount;
+        document.getElementById('statTotalPigeons').innerText = grandTotalPigeonsCount;
+        document.getElementById('statLanded').innerText = totalLandedCount;
+        document.getElementById('statRemaining').innerText = grandTotalPigeonsCount - totalLandedCount;
+    }
+
+    function renderTable() {
+        let cup = getCurrentCup();
+        if (cup === 'ALL_CUPS_MASTER') {
+            renderAllCupsTable();
+            return;
+        }
+
+        const thead = document.getElementById('tableHeader');
+        const tbody = document.getElementById('tableBody');
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        tbody.innerHTML = '';
+
+        if (!cup) {
+            document.getElementById('statLofts').innerText = 0;
+            document.getElementById('statTotalPigeons').innerText = 0;
+            document.getElementById('statLanded').innerText = 0;
+            document.getElementById('statRemaining').innerText = 0;
+            return;
+        }
+
+        if (!cup.players) cup.players = [];
+        if (!cup.dates) cup.dates = [];
+        if (!cup.timestamps) cup.timestamps = {};
+        let pCount = cup.pigeonCount || 7;
+        let minFlightMins = cup.minFlightMinutes !== undefined ? cup.minFlightMinutes : 120;
+        let startTimeStr = cup.startTime || '05:00';
+
+        document.getElementById('bannerTitle').innerText = cup.title;
+        document.getElementById('dispTimes').innerText = `Start time: ${startTimeStr} | End time: ${cup.endTime || '18:00'} | Min Flight: ${minFlightMins} mins`;
+
+        let totalLofts = cup.players.length;
+        let grandTotalPigeons = 0;
+        let totalLandedPigeons = 0;
+        let firstWinner = { name: '--', time: '00:00', photo: defaultAvatar };
+        let lastWinner = { name: '--', time: '00:00', photo: defaultAvatar };
+        let absoluteMaxTime = "00:00";
+
+        if (selectedTab === 'Total') {
+            document.getElementById('winnersContainerSection').style.display = 'none';
+
+            grandTotalPigeons = totalLofts * pCount * (cup.dates.length || 1);
+            let headerHTML = `<th>Sr</th><th>Name</th>`;
+            cup.dates.forEach(d => { headerHTML += `<th>${d}</th>`; });
+            headerHTML += `<th>Total</th>`;
+            if (isAdminLoggedIn && !isMonitorLoggedIn) headerHTML += `<th>Action</th>`;
+            thead.innerHTML = headerHTML;
+
+            let sorted = cup.players.map(p => {
+                let totalMins = 0;
+                cup.dates.forEach(d => {
+                    if (p.flights && p.flights[d]) {
+                        let times = p.flights[d].filter(t => t !== '' && t !== undefined).sort();
+                        if (times.length > 0) {
+                            totalLandedPigeons += times.length;
+                        }
+                        p.flights[d].forEach(lTime => {
+                            if (lTime && lTime > absoluteMaxTime) absoluteMaxTime = lTime;
+                            totalMins += calculateMinutes(startTimeStr, lTime, minFlightMins);
+                        });
+                    }
+                });
+                return { ...p, totalMins };
+            }).sort((a, b) => b.totalMins - a.totalMins);
+
+            sorted.filter(p => p.name.toLowerCase().includes(searchQuery)).forEach((p, idx) => {
+                let tr = document.createElement('tr');
+                if (idx === 0 && p.totalMins > 0) tr.className = 'pos-1';
+                if (isMonitorLoggedIn && monitoredPlayerId === p.id) tr.className += ' monitored-row';
+
+                let html = `<td>${idx + 1}</td>
+                <td>
+                    <div class="player-cell">
+                        <img src="${p.photo || defaultAvatar}" class="player-img" ${isAdminLoggedIn ? 'onclick="triggerPhotoUpload('+p.id+')" style="cursor:pointer;"' : ''}>
+                        <span><b>${p.name}</b> ${isMonitorLoggedIn && monitoredPlayerId === p.id ? '<span style="color:#0d9488; font-size:10px;">(آپ کا زیرِ نگرانی کھلاڑی)</span>' : ''}</span>
+                    </div>
+                </td>`;
+                cup.dates.forEach(d => {
+                    let dMins = 0;
+                    if (p.flights && p.flights[d]) {
+                        p.flights[d].forEach(lTime => dMins += calculateMinutes(startTimeStr, lTime, minFlightMins));
+                    }
+                    html += `<td>${formatMinsToHours(dMins)}</td>`;
+                });
+                html += `<td><div class="total-badge">${formatMinsToHours(p.totalMins)}</div></td>`;
+                if (isAdminLoggedIn && !isMonitorLoggedIn) html += `<td><button class="btn-danger" style="padding:4px 8px; font-size:11px;" onclick="confirmDeletePlayer(${p.id})">Del</button></td>`;
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+        } else {
+            document.getElementById('winnersContainerSection').style.display = 'flex';
+
+            grandTotalPigeons = totalLofts * pCount;
+            let headerHTML = `<th>Sr</th><th>Name</th>`;
+            for (let i = 1; i <= pCount; i++) headerHTML += `<th>Pigeon ${i}</th>`;
+            headerHTML += `<th>Total</th>`;
+            thead.innerHTML = headerHTML;
+
+            cup.players.forEach(p => {
+                let pData = (p.flights && p.flights[selectedTab]) ? p.flights[selectedTab] : [];
+                pData.forEach(t => { if (t && t > absoluteMaxTime) absoluteMaxTime = t; });
+            });
+
+            let daySorted = cup.players.map(p => {
+                let pData = (p.flights && p.flights[selectedTab]) ? p.flights[selectedTab] : new Array(pCount).fill('');
+                let dayMins = 0;
+                let times = pData.filter(t => t !== '' && t !== undefined).sort();
+                if (times.length > 0) {
+                    totalLandedPigeons += times.length;
+                    let firstPigeonTime = times[0];
+                    let lastPigeonTime = times[times.length - 1];
+                    if (firstPigeonTime > firstWinner.time) firstWinner = { name: p.name, time: firstPigeonTime, photo: p.photo || defaultAvatar };
+                    if (lastPigeonTime > lastWinner.time) lastWinner = { name: p.name, time: lastPigeonTime, photo: p.photo || defaultAvatar };
+                }
+                pData.forEach(lTime => dayMins += calculateMinutes(startTimeStr, lTime, minFlightMins));
+                return { ...p, pData, dayMins };
+            }).sort((a, b) => b.dayMins - a.dayMins);
+
+            daySorted.filter(p => p.name.toLowerCase().includes(searchQuery)).forEach((p, idx) => {
+                let tr = document.createElement('tr');
+                if (idx === 0 && p.dayMins > 0) tr.className = 'pos-1';
+                if (isMonitorLoggedIn && monitoredPlayerId === p.id) tr.className += ' monitored-row';
+
+                let html = `<td>${idx + 1}</td>
+                <td>
+                    <div class="player-cell">
+                        <img src="${p.photo || defaultAvatar}" class="player-img" ${(isAdminLoggedIn && (!isMonitorLoggedIn || monitoredPlayerId === p.id)) ? 'onclick="triggerPhotoUpload('+p.id+')" style="cursor:pointer;"' : ''}>
+                        <span><b>${p.name}</b> ${isMonitorLoggedIn && monitoredPlayerId === p.id ? '<span style="color:#0d9488; font-size:10px; font-weight:700;">🛡️ (منصف ڈیوٹی)</span>' : ''}</span>
+                    </div>
+                </td>`;
+
+                let lockLimitMins = cup.timeLockMinutes !== undefined ? cup.timeLockMinutes : 30;
+
+                for (let i = 0; i < pCount; i++) {
+                    let cellTime = p.pData[i] || '';
+                    let isLatestBlink = (cellTime !== '' && cellTime === absoluteMaxTime) ? 'blinking-cell' : '';
+                    
+                    let isNil = false;
+                    if (cellTime) {
+                        let singleMin = calculateMinutes(startTimeStr, cellTime, minFlightMins);
+                        if (singleMin === 0) isNil = true;
+                    }
+
+                    let cellKey = `${p.id}_${selectedTab}_${i}`;
+                    let entryTime = cup.timestamps[cellKey];
+                    let isLockedForMonitor = false;
+                    if (entryTime && isMonitorLoggedIn) {
+                        let elapsedMinutes = (Date.now() - entryTime) / (1000 * 60);
+                        if (elapsedMinutes > lockLimitMins) isLockedForMonitor = true;
+                    }
+
+                    let canEditThisCell = isAdminLoggedIn && (!isMonitorLoggedIn || (monitoredPlayerId === p.id && !isLockedForMonitor));
+
+                    if (canEditThisCell) {
+                        let nilClass = isNil ? 'nil-flight' : '';
+                        html += `<td><input type="time" class="time-input ${isLatestBlink} ${nilClass}" value="${cellTime}" onfocus="handleInputFocus()" onblur="handleInputBlur(${p.id}, '${selectedTab}', ${i}, this.value)"></td>`;
+                    } else {
+                        let lockIcon = isLockedForMonitor ? ' 🔒' : '';
+                        let nilText = isNil ? ' <span style="font-size:9px; font-weight:bold; color:#60a5fa;">(Nil)</span>' : '';
+                        let nilDisplayClass = isNil ? 'nil-flight' : '';
+                        html += `<td><span class="time-display ${isLatestBlink} ${nilDisplayClass}">${cellTime || '--:--'}${nilText}${lockIcon}</span></td>`;
+                    }
+                }
+                html += `<td><div class="total-badge">${formatMinsToHours(p.dayMins)}</div></td>`;
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('firstWinnerName').innerText = firstWinner.name !== '--' ? firstWinner.name : '--';
+            document.getElementById('firstWinnerTime').innerText = firstWinner.time !== '00:00' ? firstWinner.time : '00:00:00';
+            document.getElementById('firstWinnerImg').src = firstWinner.photo;
+            document.getElementById('lastWinnerName').innerText = lastWinner.name !== '--' ? lastWinner.name : '--';
+            document.getElementById('lastWinnerTime').innerText = lastWinner.time !== '00:00' ? lastWinner.time : '00:00:00';
+            document.getElementById('lastWinnerImg').src = lastWinner.photo;
+        }
+
+        document.getElementById('statLofts').innerText = totalLofts;
+        document.getElementById('statTotalPigeons').innerText = grandTotalPigeons;
+        document.getElementById('statLanded').innerText = totalLandedPigeons;
+        document.getElementById('statRemaining').innerText = grandTotalPigeons - totalLandedPigeons;
+    }
+
+    function confirmDeletePlayer(id) {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) return;
+        showConfirmModal('Delete Player', 'Are you sure you want to delete this player?', function() {
+            let cup = getCurrentCup();
+            if (!cup || cup === 'ALL_CUPS_MASTER') return;
+            if (!cup.players) cup.players = [];
+            cup.players = cup.players.filter(p => p.id !== id);
+            saveData();
+            showToast("کھلاڑی کامیابی سے ڈیلیٹ کر دیا گیا ہے!");
+        });
+    }
+
+    function confirmResetAll() {
+        if (!isAdminLoggedIn || isMonitorLoggedIn) return;
+        showConfirmModal('Reset All Data', 'Are you sure you want to clear all players and flight dates for this cup?', function() {
+            let cup = getCurrentCup();
+            if (!cup || cup === 'ALL_CUPS_MASTER') return;
+            cup.players = [];
+            cup.dates = [];
+            cup.timestamps = {};
+            saveData();
+            showToast("کپ کا تمام ڈیٹا ری سیٹ کر دیا گیا ہے!");
+        });
+    }
+
+    function exportDataJSON() {
+        if (!isMasterAdmin) return;
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(multiCupData, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "offline_pigeon_backup.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showToast("بیک اپ فائل کامیابی سے ڈاؤن لوڈ ہو گئی ہے!");
+    }
+
+    function importDataJSON(event) {
+        if (!isMasterAdmin) return;
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let parsedData = JSON.parse(e.target.result);
+                if (parsedData && parsedData.cups) {
+                    multiCupData = parsedData;
+                    saveData();
+                    showToast("ڈیٹا کامیابی سے امپورٹ ہو گیا ہے!");
+                }
+            } catch (err) {
+                alert("Invalid JSON file!");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function shareResults() {
+        let cup = getCurrentCup();
+        let title = cup === 'ALL_CUPS_MASTER' ? "تمام کپوں کا اکٹھا ماسٹر لیڈر بورڈ" : cup.title;
+        let shareText = `🏆 ${title}\n\nCheck results here!`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                text: shareText,
+                url: window.location.href
+            }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            showToast("لنک کلپ بورڈ پر کاپی ہو گیا ہے!");
+        }
+    }
+
+    function downloadPDF() {
+        let cup = getCurrentCup();
+        let filename = cup === 'ALL_CUPS_MASTER' ? "All_Cups_Grand_Master_Result.pdf" : `${cup.title}_Result.pdf`;
+        let element = document.getElementById('pdfContent');
+        let opt = {
+            margin:       0.3,
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+        };
+        html2pdf().set(opt).from(element).save();
+        showToast("PDF فائل کامیابی سے ڈاؤن لوڈ ہو رہی ہے!");
+    }
+</script>
+
+</body>
+</html>
