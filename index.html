@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پیجن ٹورنامنٹ چیمپئن شپ - Offline</title>
+    <title>پیجن ٹورنامنٹ چیمپئن شپ - Live GitHub Sync</title>
 
     <style>
         :root {
@@ -475,6 +475,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
+    // GitHub API Configuration
+    const GITHUB_OWNER = "asifkhichi569-star";
+    const GITHUB_REPO = "Pigeon-Tournament-Live";
+    const GITHUB_FILE_PATH = "data.json";
+    const GITHUB_TOKEN = "Ghp_hWBJISBiZsuYGHKZ1TDafvPayuZmjk38QMeZ";
+
     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
     // Default local state
@@ -541,7 +547,75 @@
         }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    // GitHub Sync Functions
+    async function loadFromGitHub() {
+        try {
+            let url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+            let res = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (res.ok) {
+                let fileData = await res.json();
+                let contentDecoded = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+                if (contentDecoded && contentDecoded.cups) {
+                    multiCupData = contentDecoded;
+                    localStorage.setItem('khichi_pigeon_offline_data', JSON.stringify(multiCupData));
+                    renderCupsBar();
+                    loadCurrentCupUI();
+                    console.log("Data successfully synced from GitHub!");
+                }
+            }
+        } catch (err) {
+            console.log("Using local storage fallback, offline or GitHub fetch error:", err);
+        }
+    }
+
+    async function saveToGitHub() {
+        try {
+            let url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
+            let getRes = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            let sha = null;
+            if (getRes.ok) {
+                let fileData = await getRes.json();
+                sha = fileData.sha;
+            }
+
+            let contentStr = JSON.stringify(multiCupData, null, 2);
+            let encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
+
+            let bodyData = {
+                message: "Auto update tournament data from web app",
+                content: encodedContent
+            };
+            if (sha) bodyData.sha = sha;
+
+            let putRes = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(bodyData)
+            });
+
+            if (putRes.ok) {
+                console.log("Data successfully saved to GitHub repository!");
+            }
+        } catch (err) {
+            console.error("Error saving to GitHub:", err);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
         let savedTheme = localStorage.getItem('pigeon_theme') || 'dark';
         document.body.setAttribute('data-theme', savedTheme);
         document.getElementById('themeToggleBtn').innerHTML = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
@@ -566,6 +640,9 @@
 
         renderCupsBar();
         loadCurrentCupUI();
+        
+        // Sync latest from GitHub on startup
+        await loadFromGitHub();
     });
 
     function closeModal(modalId) {
@@ -626,6 +703,8 @@
         if (!isInputFocused) {
             loadCurrentCupUI();
         }
+        // Save to GitHub automatically
+        saveToGitHub();
     }
 
     function getCurrentCup() {
